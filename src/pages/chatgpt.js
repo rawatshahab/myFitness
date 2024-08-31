@@ -4,7 +4,7 @@ import './chat.css';
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
 
-const App = () => {
+const ChatBotLogic = () => {
   const [message, setMessage] = useState("");
   const [isResponseScreen, setisResponseScreen] = useState(false);
   const [messages, setMessages] = useState([
@@ -103,4 +103,4 @@ const App = () => {
   );
 };
 
-export default App;
+export default ChatBotLogic;
