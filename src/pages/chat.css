@@ -1,16 +1,28 @@
-/* chatbot.css */
-
-/* Style the chatbot container */
-
+.hi{
+  background-color: #212529;
+}
 .container{
   display: flex;
  /* Replace with the path to your image */
- background-image: url('bot.png'); /* Replace with the path to your image */
+  background-image: url('bot.png'); /*Replace with the path to your image */
   background-size: 1500px 700px; /* Adjust how the background image covers the container */
   background-repeat: no-repeat; /* Prevent the background image from repeating */
   background-position: -470px;
   /* margin-right: 400px; */
 
+}
+.userMsg, .responseMsg {
+  
+  padding: 10px;
+  background-color: #7EAA92;
+    color: #fff;
+    margin-bottom: 5px;
+}
+.responseMsg {
+  
+  padding: 10px;
+  background-color: #e0e0e0;
+  color: #333
 }
 .img{
   color: white;
@@ -41,9 +53,9 @@
   color: #b8b7b7;
   padding-left: 50px;
   padding-top: 30px;
-  font-size: 16px;
+  font-size: 17px;
   font-family: Ubuntu,sans-serif;
-  word-spacing: 1px;
+  word-spacing: 2px;
 }
 .chatbot-container {
     width: 500px;
