@@ -1,123 +1,106 @@
-import React, { useState, setIsLoading,isLoading,useEffect } from 'react';
-import './chat.css';
-import OpenAI from 'openai';
-import Navbar from '../components/Navbar';
-const openAi = new OpenAI({ apiKey:process.env.REACT_APP_API_KEY ,dangerouslyAllowBrowser: true });
+import React, { useState, useEffect } from 'react';
 
-const ChatBotLogic = () => {
-  const [messages, setMessages] = useState([{ text: "Hello! How can I assist you today?", sender: 'bot' },]);
-  const [inputMessage, setInputMessage] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+import './chat.css';
+import { GoogleGenerativeAI } from "@google/generative-ai";
+
+
+const App = () => {
+  const [message, setMessage] = useState("");
+  const [isResponseScreen, setisResponseScreen] = useState(false);
+  const [messages, setMessages] = useState([
+    { type: "introMsg", text: "Hi there! I'm FitBot, your AI assistant for fitness and daily tasks." },
+  ]); // Initial message
+  const [isLoading, setIsLoading] = useState(false); // State for loading indicator
+
+  const hitRequest = async (msg) => {
+    if (!msg) return;
+
+    setIsLoading(true); // Set loading indicator to true
+    const genAI = new GoogleGenerativeAI('AIzaSyD9ilFGBSqFgJyQzIJA97fUiGtY2foZQ78');
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    const result = await model.generateContent(msg);
+
+    const newMessages = [
+      ...messages,
+      { type: "userMsg", text: msg },
+      { type: "responseMsg", text: result.response.text() },
+    ];
+
+    setMessages(newMessages);
+    setisResponseScreen(true);
+    setMessage("");
+    setIsLoading(false); // Set loading indicator to false after receiving response
+    console.log(result.response.text());
+  };
+
+  const generateResponse = () => {
+    hitRequest(message); // Call hitRequest function with user message
+  };
+
+  const newChat = () => {
+    setisResponseScreen(false);
+    setMessages([]);
+  };
+
+  const handleSendMessage = (e) => {
+    e.preventDefault();
+    const newMessage = { type: "userMsg", text: message };
+    setMessages([...messages, newMessage]); // Add user message immediately
+    generateResponse(); // Generate response asynchronously
+  };
 
   const handleInputChange = (e) => {
-    setInputMessage(e.target.value);
+    setMessage(e.target.value);
   };
 
-  const handleSendMessage = async (e) => {
-    e.preventDefault();
-    const trimmedMessage = inputMessage.trim();
-
-    if (trimmedMessage !== '') {
-      // Add user's message to the chat
-      setMessages([...messages, { text: trimmedMessage, sender: 'user' }]);
-      setInputMessage('');
-      setIsLoading(true);
-
-      // Send the user's message to the chatbot and get the response
-      const botResponse = await getBotResponse(trimmedMessage);
-      setMessages((prevMessages) => [
-        ...prevMessages,
-        { text: botResponse, sender: 'bot' },
-      ]);
-      setIsLoading(false);
-    }
+  const renderLoading = () => {
+    return (
+      <div className="loading">
+        {/* Add your loading indicator here, e.g., spinner, text */}
+        Loading...
+      </div>
+    );
   };
-
-  // Function to send user's message to the chatbot and get a response
-  const getBotResponse = async (userMessage) => {
-    try {
-      const res = await openAi.chat.completions.create({
-        model: 'gpt-3.5-turbo',
-        messages: [{ role: 'user', content: userMessage }],
-      });
-
-      return res.choices[0].message.content;
-    } catch (error) {
-      console.error('Error communicating with the chatbot:', error);
-      return 'An error occurred while processing your request.';
-    }
-  };
-  const handleKeyPress = (e) => {
-    // Check if the "Enter" key (key code 13) is pressed
-    if (e.key === 13) {
-      e.preventDefault(); // Prevent the default form submission behavior
-      handleSendMessage(); // Call the message sending function
-    }
-  };
-
-  useEffect(() => {
-    // Attach the key press event listener to the input field
-    document.addEventListener('keydown', handleKeyPress);
-    
-    // Remove the event listener when the component unmounts
-    return () => {
-      document.removeEventListener('keydown', handleKeyPress);
-    };
-  }, []);
 
   return (
-    <div>
-    
-    
-    <div className='container'>
-    
-    
-    <div className='img'>
-    
-    
-       
-    </div>
-    <div className="chatbot-container">
-    
-      <div className="chat-area">
-        {messages.map((message, index) => (
-          <div key={index} className={`message ${message.sender}`}>
-            {message.text}
+    <div className='hi'>
+      <div className='container'>
+        <div className='img'></div>
+        <div className="chatbot-container">
+          <div className="chat-area">
+            {messages?.map((msg, index) => (
+              <div key={index} className={msg.type}>
+                {msg.text}
+              </div>
+            ))}
+            {isLoading && (
+              <div className="loading-message">
+                {renderLoading()}
+              </div>
+            )}
           </div>
-        ))}
-        {isLoading && (
-  <div className='message bot loading-message'>
-    <span>MyBot is typing....</span>
-  </div>
-)}
+          <div className="user-input">
+            <form onSubmit={handleSendMessage}>
+              <input
+                type="text"
+                placeholder="Type your message..."
+                value={message}
+                onChange={handleInputChange}
+              />
+              <button type="submit">Send</button>
+            </form>
+          </div>
+        </div>
+        <div className='botbody'>
+          <h1 className='h1'>MyBot</h1>
+          <p className='p'>Introducing FitBot - your personal AI assistant that can help you with all your fitness and day-to-day queries. With advanced machine learning algorithms, FotBot provides accurate and personalized solutions in real-time. Whether you need workout routines, healthy eating tips, or guidance on managing your daily schedule, FitBot has got you covered. Interact with FotBot through a simple and user-friendly interface, and customize your experience by setting your goals and preferences. FitBot is here to make your life easier, healthier, and more balanced.</p>
+          <h3 className='h3'>
+            Excuses don't burn calories.
+          </h3>
+        </div>
       </div>
-      <div className="user-input">
-  <form onSubmit={handleSendMessage}>
-    <input
-      type="text"
-      placeholder="Type your message..."
-      value={inputMessage}
-      onChange={handleInputChange}
-    />
-    <button type="submit">Send</button>
-  </form>
-</div>
-
-    </div>
-    <div className='botbody'>
-      <h1 className='h1'>MyBot</h1>
-      <p className='p'>Introducing FitBot - your personal AI assistant that can help you with all your fitness and day-to-day queries. With advanced machine learning algorithms, FotBot provides accurate and personalized solutions in real-time. Whether you need workout routines, healthy eating tips, or guidance on managing your daily schedule, FitBot has got you covered. Interact with FotBot through a simple and user-friendly interface, and customize your experience by setting your goals and preferences. FotBot is here to make your life easier, healthier, and more balanced.</p>
-      <h3 className='h3'>
-      Excuses don't burn calories.
-      </h3>
-    </div>
-    </div>
     </div>
   );
 };
 
-export default ChatBotLogic;
-
-
-
-
+export default App;
