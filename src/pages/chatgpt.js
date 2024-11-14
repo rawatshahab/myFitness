@@ -16,7 +16,7 @@ const ChatBotLogic = () => {
     if (!msg) return;
 
     setIsLoading(true); // Set loading indicator to true
-    const genAI = new GoogleGenerativeAI('AIzaSyD9ilFGBSqFgJyQzIJA97fUiGtY2foZQ78');
+    const genAI = new GoogleGenerativeAI('AIzaSyBOJD3AEoRmFhoN9RPROyCmUiY1Wu9xb7o');
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
     const result = await model.generateContent(msg);
 
