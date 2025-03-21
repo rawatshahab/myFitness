@@ -35,7 +35,7 @@ const Navbar = () => {
     >
           
 <Link to="/">
-<img src={Logo} alt="logo" style={{width:'270px', margin:'5px -1130px'}} />
+<img src={Logo} alt="logo" style={{width:'270px', margin:'5px -1100px'}} />
 </Link>     
 {/* <Link style={{textDecoration: 'none',color:'white'}}>Hello</Link> */}
 
